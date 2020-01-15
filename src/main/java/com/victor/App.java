@@ -3,11 +3,19 @@ package com.victor;
 import com.victor.db.DbConnection;
 import com.victor.model.Portaria;
 import com.victor.model.Resolucao;
-import com.victor.scraping.PortariaScrap;
-import com.victor.scraping.ResolucaoScrap;
+import com.victor.util.FileReader;
+import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 public class App 
 {
@@ -16,11 +24,24 @@ public class App
 
     public static void main( String[] args )
     {
-        List<Resolucao> resolucoes = ResolucaoScrap.buscarResolucoes(URL_CONTRAN_RESOLUCOES);
-        List<Portaria> portarias = PortariaScrap.buscarPortarias(URL_CONTRAN_PORTARIAS_2013);
+//        List<Resolucao> resolucoes = ResolucaoScrap.buscarResolucoes(URL_CONTRAN_RESOLUCOES);
+//        List<Portaria> portarias = PortariaScrap.buscarPortarias(URL_CONTRAN_PORTARIAS_2013);
+//
+//        salvarResolucoes(resolucoes);
+//        salvarPortarias(portarias);
+        analizarLivro();
+    }
 
-        salvarResolucoes(resolucoes);
-        salvarPortarias(portarias);
+    private static void analizarLivro() {
+        BookAnalysis ba = new BookAnalysis();
+        Map<Integer, List<String>> analise = ba.readPdfFile("C:\\Dev\\java\\contran-scraping\\src\\main\\resources\\livro.pdf");
+
+        for (Map.Entry<Integer, List<String>> page : analise.entrySet()) {
+            System.out.println("Pagina: " + page.getKey());
+            for (String line : page.getValue()) {
+                System.out.println(line);
+            }
+        }
     }
 
     private static void salvarResolucoes(List<Resolucao> resolucoes) {
